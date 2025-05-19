@@ -9,27 +9,33 @@
             <!-- Фильтры и поиск -->
             <div class="card mb-4">
                 <div class="card-body">
-                    <form action="{{ route('catalog') }}" method="GET">
+                    <form action="{{ route('catalog') }}" method="GET" id="auto-filter-form">
                         <div class="row">
                             <!-- Поиск -->
                             <div class="col-md-5 mb-3 mb-md-0">
                                 <div class="input-group">
-                                    <input type="text" name="search" class="form-control" 
+                                    <input type="text" 
+                                           name="search" 
+                                           class="form-control" 
                                            placeholder="Поиск по названию или описанию..." 
-                                           value="{{ request('search') }}">
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-search"></i>
-                                    </button>
+                                           value="{{ request('search') }}"
+                                           id="search-input"
+                                           autocomplete="off">
+                                    <span class="input-group-text search-loader d-none">
+                                        <div class="spinner-border spinner-border-sm" role="status">
+                                            <span class="visually-hidden">Загрузка...</span>
+                                        </div>
+                                    </span>
                                 </div>
                             </div>
                             
                             <!-- Фильтр по категории -->
                             <div class="col-md-3 mb-3 mb-md-0">
-                                <select name="category" class="form-select" onchange="this.form.submit()">
+                                <select name="category_id" class="form-select">
                                     <option value="">Все категории</option>
                                     @foreach($categories as $category)
                                         <option value="{{ $category->id }}" 
-                                            {{ request('category') == $category->id ? 'selected' : '' }}>
+                                            {{ request('category_id') == $category->id ? 'selected' : '' }}>
                                             {{ $category->name }}
                                         </option>
                                     @endforeach
@@ -41,8 +47,7 @@
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="recommended" 
                                            id="recommended" value="1" 
-                                           {{ request('recommended') ? 'checked' : '' }}
-                                           onchange="this.form.submit()">
+                                           {{ request('recommended') ? 'checked' : '' }}>
                                     <label class="form-check-label" for="recommended">
                                         Рекомендуемые
                                     </label>
@@ -51,7 +56,7 @@
                             
                             <!-- Сортировка -->
                             <div class="col-md-2">
-                                <select name="sort" class="form-select" onchange="this.form.submit()">
+                                <select name="sort" class="form-select">
                                     <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Новые</option>
                                     <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>Цена ↑</option>
                                     <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>Цена ↓</option>
@@ -105,7 +110,7 @@
                 
                 <!-- Пагинация -->
                 <div class="d-flex justify-content-center">
-                    {{ $products->links() }}
+                    {{ $products->withQueryString()->links() }}
                 </div>
             @else
                 <div class="alert alert-info">
@@ -116,6 +121,35 @@
     </div>
 </div>
 @endsection
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('auto-filter-form');
+    const searchInput = document.getElementById('search-input');
+    const loader = document.querySelector('.search-loader');
+    let searchTimeout;
+
+    function submitForm() {
+        loader.classList.remove('d-none');
+        form.submit();
+    }
+
+    // Более агрессивная версия обработчиков
+    const handleFilterChange = () => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(submitForm, 800);
+    };
+
+    // Обработчики для всех элементов фильтрации
+    searchInput.addEventListener('input', handleFilterChange);
+    
+    document.querySelectorAll('select[name="category_id"], select[name="sort"]')
+        .forEach(el => el.addEventListener('change', handleFilterChange));
+    
+    document.querySelector('input[name="recommended"]')
+        .addEventListener('change', submitForm); // Мгновенно для чекбокса
+});
+</script>
 
 @section('styles')
 <style>
@@ -135,5 +169,9 @@
         color: #6c757d;
         font-size: 3rem;
     }
+    .search-loader {
+        display: none;
+    }
 </style>
 @endsection
+

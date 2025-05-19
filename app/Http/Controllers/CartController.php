@@ -17,6 +17,11 @@ class CartController extends Controller
         return view('cart', compact('cart', 'total', 'itemCount'));
     }
 
+    public static function getCartCount()
+{
+    return count(session()->get('cart', []));
+}
+
     public function add(Product $product, Request $request)
     {
         $request->validate([

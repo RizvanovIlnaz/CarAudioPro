@@ -1,35 +1,9 @@
-@import 'tailwindcss';
-
-
-/* Основные стили */
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #333;
+.bg-light {
+  --bs-bg-opacity: 1;
+    background-color: rgb(148, 148, 148) !important;
 }
-
-.hero {
-    background-color: #f8fafc;
-    padding: 4rem 0;
-}
-
-.product-card {
-    transition: transform 0.3s ease;
-    border: none;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.product-card:hover {
-    transform: translateY(-5px);
-}
-
-.placeholder-image {
-    height: 180px;
-    width: 100%;
-}
-
-/* Адаптивность */
-@media (max-width: 768px) {
-    .hero h1 {
-        font-size: 2rem;
-    }
+.dropdown-menu {
+    display: block !important; /* Временно для теста */
+    opacity: 1 !important;
+    visibility: visible !important;
 }

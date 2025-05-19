@@ -1,98 +1,117 @@
 <!DOCTYPE html>
-<html lang="ru" class="h-100">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CarAudioPro - @yield('title')</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-    
-    <!-- Добавляем Font Awesome для иконок -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Стили для корзины -->
-    <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-        main {
-            flex: 1;
-        }
-        .cart-count-badge {
-            font-size: 0.6rem;
-            top: -5px;
-            right: -5px;
-        }
-        .quantity-input {
-            width: 70px;
-            text-align: center;
-        }
-        .product-card-img {
-            height: 180px;
-            object-fit: contain;
-        }
-    </style>
-</head>
-<body class="d-flex flex-column h-100">
-    @include('partials.header')
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <main class="py-4">
-        <!-- Добавляем вывод сообщений об успехе/ошибке -->
-        @if(session('success'))
-            <div class="container">
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            </div>
-        @endif
+        <title>{{ config('app.name', 'CarAudioPro') }}</title>
+
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.bunny.net">
+        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> 
         
-        @if(session('error'))
-            <div class="container">
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    {{ session('error') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+        <!-- Scripts -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    </head>
+   
+</div>
+    <body class="font-sans antialiased">
+        
+        <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+            <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
+                <div class="container">
+                    <a class="navbar-brand" href="{{ url('/') }}">
+                         CarAudioPro
+                    </a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <!-- Левая часть меню -->
+                        <ul class="navbar-nav me-auto">
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('catalog') }}">
+                                    <i class="fas fa-list me-1"></i> Каталог
+                                </a>
+                            </li>
+                            @auth
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('orders.history') }}">
+                                        <i class="fas fa-history me-1"></i> Мои заказы
+                                    </a>
+                                </li>
+                            @endauth
+                        </ul>
+
+                        <!-- Правая часть меню -->
+                        <ul class="navbar-nav ms-auto">
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('cart.index') }}">
+                                    <i class="fas fa-shopping-cart me-1"></i>
+                                    Корзина
+                                    @php $cartCount = count(session('cart', [])) @endphp
+                                    @if($cartCount > 0)
+                                        <span class="badge bg-danger">{{ $cartCount }}</span>
+                                    @endif
+                                </a>
+                            </li>
+                           @auth
+    @if(auth()->user()->isAdmin())
+        <li class="nav-item">
+            <a class="nav-link text-danger" href="{{ route('admin.dashboard') }}">
+                <i class="fas fa-cog me-1"></i> Админка
+            </a>
+        </li>
+    @endif
+    
+    <li class="nav-item">
+        <a class="nav-link" href="{{ route('profile.edit') }}">
+            <i class="fas fa-user-edit me-1"></i> Профиль
+        </a>
+    </li>
+    <li class="nav-item">
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit" class="nav-link btn btn-link">
+                <i class="fas fa-sign-out-alt me-1"></i> Выйти
+            </button>
+        </form>
+    </li>
+@else
+    <li class="nav-item">
+        <a class="nav-link" href="{{ route('login') }}">
+            <i class="fas fa-sign-in-alt me-1"></i> Войти
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ route('register') }}">
+            <i class="fas fa-user-plus me-1"></i> Регистрация
+        </a>
+    </li>
+@endauth
+                            
+                        </ul>
+                    </div>
                 </div>
-            </div>
-        @endif
+            </nav>
 
-        @yield('content')
-    </main>
+            <!-- Page Content -->
+            <main class="py-4">
+               @yield('content')
+            </main>
+        </div>
 
-    @include('partials.footer')
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Добавляем jQuery для удобной работы с AJAX (опционально) -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    
-    <!-- Скрипты для корзины -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Авто-отправка формы при изменении количества
-            document.querySelectorAll('input[name="quantity"]').forEach(input => {
-                input.addEventListener('change', function() {
-                    this.closest('form').submit();
-                });
-            });
-            
-            // Авто-отправка формы при изменении количества в корзине
-            document.querySelectorAll('.quantity-input').forEach(input => {
-                input.addEventListener('change', function() {
-                    this.closest('form').submit();
-                });
-            });
-            
-            // Инициализация всплывающих подсказок
-            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl);
-            });
-        });
-    </script>
-    
-    @stack('scripts')
-</body>
+        <!-- Скрипты -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        @stack('scripts')
+    </body>
 </html>

@@ -10,17 +10,20 @@ class ProductController extends Controller
 {
     public function index(Request $request)
 {
-    $query = Product::query();
+    $query = Product::query()->with('category');
     
-    // Фильтрация по категории
-    if ($request->has('category')) {
-        $query->where('category_id', $request->category);
+    // Фильтр по категории
+    if ($request->filled('category_id')) {
+        $query->where('category_id', $request->category_id);
     }
     
-    // Поиск по названию
-    if ($request->has('search')) {
-        $query->where('name', 'like', '%'.$request->search.'%')
-             ->orWhere('description', 'like', '%'.$request->search.'%');
+    // Поиск (уменьшил минимальную длину до 2 символов)
+    if ($request->filled('search') && strlen($request->search) >= 2) {
+        $search = $request->search;
+        $query->where(function($q) use ($search) {
+            $q->where('name', 'like', "%{$search}%")
+              ->orWhere('description', 'like', "%{$search}%");
+        });
     }
     
     // Фильтр рекомендуемых
@@ -30,23 +33,18 @@ class ProductController extends Controller
     
     // Сортировка
     switch ($request->input('sort', 'newest')) {
-        case 'price_asc':
-            $query->orderBy('price', 'asc');
-            break;
-        case 'price_desc':
-            $query->orderBy('price', 'desc');
-            break;
-        case 'name':
-            $query->orderBy('name', 'asc');
-            break;
-        default:
-            $query->orderBy('created_at', 'desc');
+        case 'price_asc': $query->orderBy('price'); break;
+        case 'price_desc': $query->orderByDesc('price'); break;
+        case 'name': $query->orderBy('name'); break;
+        default: $query->latest();
     }
     
+    $products = $query->paginate(12)->withQueryString();
     $categories = Category::orderBy('name')->get();
-    $products = $query->paginate(12);
     
     return view('catalog.index', compact('products', 'categories'));
+
+
 }
 
 public function show(Product $product)
