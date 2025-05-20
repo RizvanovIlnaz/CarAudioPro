@@ -75,7 +75,10 @@
                         <div class="col-md-4 col-lg-3 mb-4">
                             <div class="card h-100 product-card">
                                 @if($product->main_image)
-                                    <img src="{{ asset('storage/'.$product->main_image) }}" class="card-img-top" alt="{{ $product->name }}">
+                                        <img src="{{ asset('storage/products/' . $product->main_image) }}" 
+                                        class="card-img-top" 
+                                        alt="{{ $product->name }}"
+                                        style="height: 200px; object-fit: cover;">
                                 @else
                                     <div class="no-image-placeholder">
                                         <i class="fas fa-image"></i>
@@ -108,10 +111,7 @@
                     @endforeach
                 </div>
                 
-                <!-- Пагинация -->
-                <div class="d-flex justify-content-center">
-                    {{ $products->withQueryString()->links() }}
-                </div>
+                
             @else
                 <div class="alert alert-info">
                     Товары не найдены. Попробуйте изменить параметры поиска.

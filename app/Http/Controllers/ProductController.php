@@ -39,7 +39,7 @@ class ProductController extends Controller
         default: $query->latest();
     }
     
-    $products = $query->paginate(12)->withQueryString();
+    $products = $query->get();
     $categories = Category::orderBy('name')->get();
     
     return view('catalog.index', compact('products', 'categories'));
@@ -49,13 +49,28 @@ class ProductController extends Controller
 
 public function show(Product $product)
 {
+    // Получаем предыдущий и следующий товары
+    $previousProduct = Product::where('id', '<', $product->id)
+        ->orderBy('id', 'desc')
+        ->first();
+
+    $nextProduct = Product::where('id', '>', $product->id)
+        ->orderBy('id', 'asc')
+        ->first();
+
+    // Рекомендуемые товары
     $recommendedProducts = Product::where('category_id', $product->category_id)
                                 ->where('id', '!=', $product->id)
                                 ->where('is_recommended', true)
                                 ->limit(4)
                                 ->get();
     
-    return view('catalog.show', compact('product', 'recommendedProducts'));
+    return view('catalog.show', compact(
+        'product', 
+        'recommendedProducts',
+        'previousProduct',
+        'nextProduct'
+    ));
 }
     /**
      * Отображение каталога товаров с фильтрацией
