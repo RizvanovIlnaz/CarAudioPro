@@ -2,50 +2,72 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProfileUpdateRequest;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\View\View;
-
 
 class ProfileController extends Controller
 {
-    /**
-     * Display the user's profile form.
-     */
-    public function edit(Request $request): View
+    public function edit(Request $request)
     {
         return view('profile.edit', [
-            'user' => $request->user(),
+            'user' => $request->user()
         ]);
     }
 
-    /**
-     * Update the user's profile information.
-     */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(Request $request)
     {
-        $request->user()->fill($request->validated());
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,'.$request->user()->id],
+            'phone' => ['nullable', 'string', 'max:20'],
+        ], [
+            'name.required' => 'Поле "Имя" обязательно для заполнения.',
+            'email.required' => 'Поле "Email" обязательно для заполнения.',
+            'email.email' => 'Введите корректный email адрес.',
+            'email.unique' => 'Этот email уже занят.',
+            'phone.max' => 'Номер телефона не должен превышать 20 символов.',
+        ]);
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        $request->user()->update($request->all());
+
+        return back()->with('status', 'profile-updated');
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => ['required', 'current_password'],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ], [
+            'current_password.required' => 'Введите текущий пароль.',
+            'current_password.current_password' => 'Неверный текущий пароль.',
+            'password.required' => 'Введите новый пароль.',
+            'password.confirmed' => 'Пароли не совпадают.',
+            'password.min' => 'Пароль должен содержать минимум 8 символов.',
+        ]);
+
+        $request->user()->update([
+            'password' => Hash::make($request->password),
+        ]);
+
+        return back()->with('status', 'password-updated');
+    }
+
+    public function destroy(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'delete_password' => ['required', 'current_password'],
+        ], [
+            'delete_password.required' => 'Введите пароль для подтверждения.',
+            'delete_password.current_password' => 'Неверный пароль.',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
         }
-
-        $request->user()->save();
-
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
-    }
-
-    /**
-     * Delete the user's account.
-     */
-    public function destroy(Request $request): RedirectResponse
-    {
-        $request->validateWithBag('userDeletion', [
-            'password' => ['required', 'current_password'],
-        ]);
 
         $user = $request->user();
 
@@ -56,20 +78,6 @@ class ProfileController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return Redirect::to('/');
+        return redirect('/')->with('status', 'Аккаунт успешно удален.');
     }
-
-    public function updatePassword(Request $request)
-{
-    $request->validate([
-        'current_password' => ['required', 'current_password'],
-        'password' => ['required', 'confirmed', Rules\Password::defaults()],
-    ]);
-
-    $request->user()->update([
-        'password' => Hash::make($request->password),
-    ]);
-
-    return back()->with('status', 'password-updated');
-}
 }

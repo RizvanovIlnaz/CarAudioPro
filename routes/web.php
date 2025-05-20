@@ -64,11 +64,12 @@ Route::middleware(['auth'])->group(function () {
 });
 // Аутентификация
 Route::middleware('guest')->group(function() {
-    Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
+     Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('login', [LoginController::class, 'login']);
+    Route::post('logout', [LoginController::class, 'logout'])->name('logout');
     
-    Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
-    Route::post('register', [RegisterController::class, 'register']);
+     Route::get('register', [RegisterController::class, 'create'])->name('register');
+    Route::post('register', [RegisterController::class, 'store']);
     // Маршруты сброса пароля
     Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])
          ->name('password.request');
@@ -95,6 +96,7 @@ Route::middleware(['auth'])->group(function () {
     // Профиль пользователя
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('password.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
 });
