@@ -4,111 +4,113 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('Регистрация') }}</div>
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-user-plus me-2"></i>{{ __('Регистрация') }}
+                </div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('register') }}">
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    <form method="POST" action="{{ route('register') }}" class="needs-validation" novalidate>
                         @csrf
 
+                        <!-- Поле Имя -->
                         <div class="row mb-3">
-                            <label for="name" class="col-md-4 col-form-label text-md-end">{{ __('Имя') }}*</label>
+                            <label for="name" class="col-md-4 col-form-label text-md-end">
+                                <i class="fas fa-user me-2"></i>{{ __('Имя') }}*
+                            </label>
 
                             <div class="col-md-6">
                                 <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" 
-                                       name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
+                                       name="name" value="{{ old('name') }}" required 
+                                       autocomplete="name" autofocus
+                                       placeholder="Иван Иванов">
 
                                 @error('name')
                                     <span class="invalid-feedback" role="alert">
-                                        <strong>
-                                            @if($message == 'The name field is required.')
-                                                {{ 'Поле "Имя" обязательно для заполнения.' }}
-                                            @elseif($message == 'The name must not be greater than 255 characters.')
-                                                {{ 'Имя не должно превышать 255 символов.' }}
-                                            @else
-                                                {{ $message }}
-                                            @endif
-                                        </strong>
+                                        <strong>{{ $message }}</strong>
                                     </span>
                                 @enderror
                             </div>
                         </div>
 
+                        <!-- Поле Email -->
                         <div class="row mb-3">
-                            <label for="email" class="col-md-4 col-form-label text-md-end">{{ __('Email') }}*</label>
+                            <label for="email" class="col-md-4 col-form-label text-md-end">
+                                <i class="fas fa-envelope me-2"></i>{{ __('Email') }}*
+                            </label>
 
                             <div class="col-md-6">
                                 <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" 
-                                       name="email" value="{{ old('email') }}" required autocomplete="email">
+                                       name="email" value="{{ old('email') }}" required 
+                                       autocomplete="email"
+                                       placeholder="example@mail.ru">
 
                                 @error('email')
                                     <span class="invalid-feedback" role="alert">
-                                        <strong>
-                                            @if($message == 'The email field is required.')
-                                                {{ 'Поле "Email" обязательно для заполнения.' }}
-                                            @elseif($message == 'The email must be a valid email address.')
-                                                {{ 'Введите корректный email адрес.' }}
-                                            @elseif($message == 'The email has already been taken.')
-                                                {{ 'Этот email уже занят.' }}
-                                            @else
-                                                {{ $message }}
-                                            @endif
-                                        </strong>
+                                        <strong>{{ $message }}</strong>
                                     </span>
                                 @enderror
                             </div>
                         </div>
 
+                        <!-- Поле Телефон -->
                         <div class="row mb-3">
-                            <label for="phone" class="col-md-4 col-form-label text-md-end">{{ __('Телефон') }}</label>
+                            <label for="phone" class="col-md-4 col-form-label text-md-end">
+                                <i class="fas fa-phone me-2"></i>{{ __('Телефон') }}*
+                            </label>
 
                             <div class="col-md-6">
                                 <input id="phone" type="tel" class="form-control @error('phone') is-invalid @enderror" 
-                                       name="phone" value="{{ old('phone') }}" autocomplete="tel"
-                                       placeholder="+7 (XXX) XXX-XX-XX">
+                                       name="phone" value="{{ old('phone') }}" required
+                                       autocomplete="tel"
+                                       placeholder="+7 (XXX) XXX-XX-XX"
+                                       pattern="\+7\s?[\(]{0,1}[0-9]{3}[\)]{0,1}\s?\d{3}[-]{0,1}\d{2}[-]{0,1}\d{2}">
 
                                 @error('phone')
                                     <span class="invalid-feedback" role="alert">
-                                        <strong>
-                                            @if($message == 'The phone must not be greater than 20 characters.')
-                                                {{ 'Телефон не должен превышать 20 символов.' }}
-                                            @else
-                                                {{ $message }}
-                                            @endif
-                                        </strong>
+                                        <strong>{{ $message }}</strong>
                                     </span>
                                 @enderror
+                                <small class="form-text text-muted">Формат: +7 (XXX) XXX-XX-XX</small>
                             </div>
                         </div>
 
+                        <!-- Поле Пароль -->
                         <div class="row mb-3">
-                            <label for="password" class="col-md-4 col-form-label text-md-end">{{ __('Пароль') }}*</label>
+                            <label for="password" class="col-md-4 col-form-label text-md-end">
+                                <i class="fas fa-lock me-2"></i>{{ __('Пароль') }}*
+                            </label>
 
                             <div class="col-md-6">
-                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" 
+                                <input id="password" type="password" 
+                                       class="form-control @error('password') is-invalid @enderror" 
                                        name="password" required autocomplete="new-password"
                                        placeholder="Не менее 8 символов">
 
                                 @error('password')
                                     <span class="invalid-feedback" role="alert">
-                                        <strong>
-                                            @if($message == 'The password field is required.')
-                                                {{ 'Поле "Пароль" обязательно для заполнения.' }}
-                                            @elseif($message == 'The password must be at least 8 characters.')
-                                                {{ 'Пароль должен содержать минимум 8 символов.' }}
-                                            @elseif($message == 'The password confirmation does not match.')
-                                                {{ 'Пароли не совпадают.' }}
-                                            @else
-                                                {{ $message }}
-                                            @endif
-                                        </strong>
+                                        <strong>{{ $message }}</strong>
                                     </span>
                                 @enderror
+                                <small class="form-text text-muted">Минимум 8 символов</small>
                             </div>
                         </div>
 
+                        <!-- Подтверждение пароля -->
                         <div class="row mb-3">
-                            <label for="password-confirm" class="col-md-4 col-form-label text-md-end">{{ __('Подтвердите пароль') }}*</label>
+                            <label for="password-confirm" class="col-md-4 col-form-label text-md-end">
+                                <i class="fas fa-lock me-2"></i>{{ __('Подтвердите пароль') }}*
+                            </label>
 
                             <div class="col-md-6">
                                 <input id="password-confirm" type="password" class="form-control" 
@@ -117,10 +119,11 @@
                             </div>
                         </div>
 
+                        <!-- Кнопка регистрации -->
                         <div class="row mb-0">
                             <div class="col-md-6 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
-                                    {{ __('Зарегистрироваться') }}
+                                <button type="submit" class="btn btn-primary px-4">
+                                    <i class="fas fa-user-plus me-2"></i>{{ __('Зарегистрироваться') }}
                                 </button>
                             </div>
                         </div>

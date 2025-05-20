@@ -27,7 +27,13 @@
                                     @foreach($orders as $order)
                                         <tr>
                                             <td>{{ $order->id }}</td>
-                                            <td>{{ $order->created_at->format('d.m.Y H:i') }}</td>
+                                            <td>
+                                                @php
+                                                    $date = $order->created_at->setTimezone('Asia/Yekaterinburg');
+                                                @endphp
+                                                {{ $date->isoFormat('D MMMM YYYY, HH:mm') }}
+                                                <small class="text-muted"></small>
+                                            </td>
                                             <td>
                                                 <span class="badge bg-{{ $order->status === 'completed' ? 'success' : ($order->status === 'cancelled' ? 'danger' : 'warning') }}">
                                                     {{ $order->statusName }}

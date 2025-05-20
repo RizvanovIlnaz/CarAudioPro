@@ -52,7 +52,7 @@ Route::prefix('cart')->name('cart.')->group(function() {
 // Оформление заказа
 Route::middleware(['auth'])->group(function() {
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
-    Route::post('/orders', [CheckoutController::class, 'store'])->name('orders.store');
+    Route::post('/orders', [CheckoutController::class, 'store'])->name('checkout.store');
     
     
     // История заказов
