@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', function() {
         form.submit();
     }
 
-    // Более агрессивная версия обработчиков
+    
     const handleFilterChange = () => {
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(submitForm, 800);

@@ -23,6 +23,11 @@ use App\Http\Controllers\Auth\{
     ResetPasswordController
 };
 
+// Тестовый маршрут для проверки middleware
+Route::get('/test-admin-middleware', function () {
+    return 'Middleware admin работает!';
+})->middleware('admin');
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -38,7 +43,6 @@ use App\Http\Controllers\Auth\{
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/catalog', [ProductController::class, 'index'])->name('catalog');
 Route::get('/catalog/{product}', [ProductController::class, 'show'])->name('catalog.show');
-
 Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 
 // Корзина
@@ -59,9 +63,7 @@ Route::middleware(['auth'])->group(function() {
     Route::get('/orders/history', [OrderController::class, 'history'])->name('orders.history');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
 });
-Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-});
+
 // Аутентификация
 Route::middleware('guest')->group(function() {
      Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -100,17 +102,13 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
 });
-Route::put('/password', [ProfileController::class, 'updatePassword'])->name('password.update');
 
-Route::post('logout', [LoginController::class, 'logout'])->name('logout');
+
+
 
 // Админ-панель
-
-Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function() {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function() {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-    
-
-
     // Ресурсы админки
     Route::resource('categories', CategoryController::class)->except('show');
     Route::resource('products', AdminProductController::class);

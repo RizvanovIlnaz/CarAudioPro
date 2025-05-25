@@ -28,7 +28,7 @@
                     <tr>
                         <td>
                             <div class="d-flex align-items-center">
-                                @if($item['image'])
+                               <!--  @if($item['image'])
                                     <img src="{{ asset('storage/'.$item['image']) }}" 
                                          width="60" 
                                          height="60"
@@ -39,7 +39,7 @@
                                          style="width: 60px; height: 60px;">
                                         <i class="fas fa-image text-muted"></i>
                                     </div>
-                                @endif
+                                @endif -->
                                 <div>{{ $item['name'] }}</div>
                             </div>
                         </td>

@@ -34,7 +34,7 @@
         <!-- Основное содержимое страницы товара -->
         <div class="col-md-6 mb-4 mb-md-0">
             @if($product->main_image)
-                <img src="{{ asset('storage/'.$product->main_image) }}" 
+                <img src="{{ asset('storage/products/'.$product->main_image) }}" 
                      class="img-fluid rounded" 
                      alt="{{ $product->name }}">
             @else
@@ -83,13 +83,46 @@
     @if($recommendedProducts->count() > 0)
         <div class="row mt-5">
             <div class="col-12">
-                <h3 class="mb-4">Рекомендуемые товары</h3>
+                <h3 class="mb-4">Рекомендованные товары</h3>
                 <div class="row">
-                    @foreach($recommendedProducts as $product)
-                        <div class="col-md-3 col-6 mb-4">
-                            @include('catalog.partials.product-card', ['product' => $product])
+                   @foreach($recommendedProducts as $recProduct)
+                    <div class="col-md-3 col-6 mb-4">
+                        <div class="card h-100 product-card">
+                            @if($recProduct->main_image)
+                                <img src="{{ asset('storage/products/'.$recProduct->main_image) }}" 
+                                     class="card-img-top" 
+                                     alt="{{ $recProduct->name }}"
+                                     style="height: 200px; object-fit: cover;">
+                            @else
+                                <div class="no-image-placeholder">
+                                    <i class="fas fa-image"></i>
+                                </div>
+                            @endif
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">{{ $recProduct->name }}</h5>
+                                @if($recProduct->category)
+                                    <span class="badge bg-secondary mb-2">{{ $recProduct->category->name }}</span>
+                                @endif
+                                <p class="card-text">{{ number_format($recProduct->price, 0, ',', ' ') }} ₽</p>
+                                
+                                <form action="{{ route('cart.add', $recProduct) }}" method="POST" class="mt-auto">
+                                    @csrf
+                                    <div class="input-group">
+                                        <input type="number" name="quantity" value="1" min="1" class="form-control">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-shopping-cart"></i>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="card-footer bg-transparent">
+                                <a href="{{ route('catalog.show', $recProduct) }}" class="btn btn-sm btn-outline-primary w-100">
+                                    Подробнее
+                                </a>
+                            </div>
                         </div>
-                    @endforeach
+                    </div>
+                @endforeach
                 </div>
             </div>
         </div>

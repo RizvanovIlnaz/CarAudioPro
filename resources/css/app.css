@@ -7,3 +7,25 @@
     opacity: 1 !important;
     visibility: visible !important;
 }
+
+/* Базовые стили админки */
+.admin-layout {
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.admin-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+.admin-sidebar {
+    width: 250px;
+    background: #2c3e50;
+    color: white;
+    padding: 20px;
+}
+
+.admin-content {
+    flex: 1;
+    padding: 20px;
+}

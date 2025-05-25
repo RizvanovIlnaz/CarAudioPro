@@ -72,7 +72,7 @@
                         </div>
 
                         <!-- Чекбокс "Запомнить меня" -->
-                        <div class="row mb-3">
+                       <!--  <div class="row mb-3">
                             <div class="col-md-6 offset-md-4">
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="remember" 
@@ -84,7 +84,7 @@
                                 </div>
                             </div>
                         </div>
-
+ -->
                         <!-- Кнопка входа -->
                         <div class="row mb-3">
                             <div class="col-md-8 offset-md-4">
