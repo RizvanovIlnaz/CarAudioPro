@@ -11,6 +11,7 @@ use App\Http\Controllers\{
     OrderController
 };
 use App\Http\Controllers\Admin\{
+    AdminController,
     DashboardController,
     CategoryController,
     ProductController as AdminProductController,
@@ -107,7 +108,27 @@ Route::middleware(['auth'])->group(function () {
 
 
 // Админ-панель
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function() {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    
+    // Dashboard
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    
+    // Products
+    Route::resource('products', ProductController::class);
+    
+    // Categories
+    Route::resource('categories', CategoryController::class);
+    
+    // Orders
+    Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::put('orders/{order}/update-status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
+    
+    // Users
+    Route::get('users', [UserController::class, 'index'])->name('users.index');
+    Route::put('users/{user}/update-role', [UserController::class, 'updateRole'])->name('users.update-role');
+});
+/* Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function() {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     // Ресурсы админки
     Route::resource('categories', CategoryController::class)->except('show');
@@ -118,4 +139,4 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
     Route::put('/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.updateStatus');
-});
+}); */
